@@ -1,6 +1,7 @@
 import cv2
 import dip
 
+#Leggi le immagini e trovi i bordi tramite Canny
 class Phase0:
     def Algo(self, path, show_im = False, show_BEM = False):
         im = cv2.imread(
@@ -11,7 +12,9 @@ class Phase0:
                 image = im,
                 title = "Original Image",
                 info = True)
+            
     ### BINARY EDGE MAP
+    # Lettura immagine tramite un kernel dato dalle deviazioni standard
         image = cv2.GaussianBlur(
                                 src = im,
                                 ksize = (0, 0),
@@ -19,6 +22,7 @@ class Phase0:
                                 sigmaY = 0,
                                 borderType = cv2.BORDER_DEFAULT)
         
+        #Apertursize=Kernel di Sobel 3*3 e L2 per fare la norma L2
         BEM = cv2.Canny(
                     image = image,
                     threshold1 = 20, 
@@ -28,6 +32,7 @@ class Phase0:
         
         Gx = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=3)
         Gy = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=3)
+
         G = cv2.magnitude(Gx, Gy)
         theta = cv2.phase(Gx, Gy)
         
@@ -40,6 +45,7 @@ class Phase0:
 
 dip.WizardFamiliar("Phase 0!")
 
+#Da guardare(Parte da migliorare-> uguale al metodo di prima)
 class Phase0Gradient:
     def Algo(self, path, show_im = False, show_BEM = False):
         im = cv2.imread(
