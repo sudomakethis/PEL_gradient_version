@@ -7,15 +7,28 @@ NODGEL = 0
 
 class Phase1:
     def __init__(self, BEM, G = None, theta=None):
+
+        #Self variabile di python che richiamo oggetto(Tipo this in java)
         self.BEMF = np.copy(BEM)
+
+        #Conta gli edge
         self.num_edgels_init = np.count_nonzero(BEM == 255)
+
         self.fill_count = 0
+
         self.G = G
         self.theta = theta
+
+
         self.checks = ["check1", "check2", "check3"]
+
+        #Contorno di un punto, ovvero i vicini
         self.neighbourhood = [(-1,-1),(-1, 0),(-1,+1),
                               ( 0,-1),        ( 0,+1),
                               (+1,-1),(+1, 0),(+1,+1)]
+        
+        #Per ogni vicino, vengono trovati i possibili candidati da riempire
+        #Si parte da un quadrato 3*3 e si valuta per ogni quadrato i candidati e i controlli tramite i check
         self.filler = [
                 {
                     "forelast": [(-1,-1)],
@@ -68,22 +81,36 @@ class Phase1:
                 }
             ]
     
+    #Creo un array di 8 elementi, da pi/8,2pi/8,....,pi
     def initCondition(self):
         self.COND = np.pi/8 * np.arange(1, 9)
 
     # O(n^2 * (8+8+8+3+3*3) ) = O(n^2 * 36)
     def Algo(self, show = False):
-        for i in range(2, self.BEMF.shape[0]-2):
+
+        #Senza -2 cercherei celle che non ci sono, parto da 2 per lo stesso motivo
+        for i in range(2, self.BEMF.shape[0]-2): 
+            
             for j in range(2, self.BEMF.shape[1]-2):
+
+                #Se è un bordo e se solo uno dei vicini è un bordo
                 if ((self.BEMF[i,j] != NODGEL) and
                     (sum([self.BEMF[i + x, j + y] != NODGEL for x, y in self.neighbourhood]) == 1)):
+
+                #Trova l'indice del primo pixel che ha valore diverso da 0 
                     recipe_num = [idx for idx, (x,y) in enumerate(self.neighbourhood)
                                   if self.BEMF[i + x, j + y] != NODGEL][0]
+                    
+                #Estra il filler di quello che ha trovato come border e fa un dizionario
                     recipe = dict(self.filler[recipe_num])
                     for key, value in recipe.items():
-                        recipe[key] = [(i + x, j + y) for x, y in value] # trasforma le coordinate da relative ad assolute
+                        recipe[key] = [(i + x, j + y) for x, y in value] # Trasforma le coordinate da relative ad assolute
+                
+                #Se il forelast è considerato bordo e tutti i candidati sono non bordi, se non lo è non ha sens
                     if (any([self.BEMF[x, y] != NODGEL for x, y in recipe["forelast"]]) and
                         all([self.BEMF[x, y] == NODGEL for x, y in recipe["candidate"]])):
+
+                #Se almeno un pixel nel check è diverso da NODGEL, metti vero e poi aggiorni il pixel come EDGEL 
                         for check in self.checks:
                             if next((True for x, y in recipe[check] if self.BEMF[x, y] != NODGEL), False):
                                 self.BEMF[recipe["candidate"][self.checks.index(check)]] = EDGEL
