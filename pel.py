@@ -1,3 +1,4 @@
+
 #######     ########   ##
 ##     ##   ##         ##
 ##     ##   ##         ##
@@ -18,6 +19,7 @@ from Phase02 import Phase2, Phase2Gradient
 from Phase03 import Phase3
 from Phase04 import Phase4
 from Evaluation import Evaluation
+
 
 MIN_LENGTH = 8
 
@@ -141,6 +143,7 @@ def execute(data_dir, file_name, pel=pelBase):
     BEMT = pel(data_dir, file_name, timer, show=False)
 
     ### RESULTS
+    print(pel)
     print("\nTime Table: [ms]")
     timer.table(mode = "inc")
 
@@ -166,8 +169,9 @@ def eval(BEM1, BEM2):
 
 data_dir = "\\Data\\"
 # file_name = "lena.png"
-for i in range(16):
-    images = ["lena.png", "apartment.png", "birds.png", 'cityscapes.png', 'kitchen.png', 'rose.png', 'saint.png', 'worm.png']
+for i in range(5):
+    #images = ["lena.png", "apartment.png", "birds.png", 'cityscapes.png', 'kitchen.png', 'rose.png', 'saint.png', 'worm.png']
+    images = ["lena.png"]
     results = []
     for file_name in images:
         results.append(execute(data_dir, file_name, pelModificato))
