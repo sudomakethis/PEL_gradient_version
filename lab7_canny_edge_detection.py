@@ -24,24 +24,28 @@ def get_gradient_mag_phase(image):
 
     return G, Theta
 
+
 def non_maxima_suppression(G, Theta):
+    edge_candidates = np.zeros(G.shape, dtype=np.uint8)
 
-    edge_candidates=np.zeros(G.shape, dtype=np.uint8)
+    # Slicing gli indici delle celle adiacenti per ogni direzione
+    I, J = np.arange(1, G.shape[0]-1), np.arange(1, G.shape[1]-1)
 
-    for i in range(1,G.shape[0]-1):
-        for j in range(1,G.shape[1]-1):
-            if Theta[i,j] == 0:
-                if np.max([G[i,j-1],G[i,j],G[i,j+1]]) == G[i,j]:
-                    edge_candidates[i,j] = 1
-            elif Theta[i,j] == 45:
-                if np.max([G[i+1,j-1],G[i,j],G[i-1,j+1]]) == G[i,j]:
-                    edge_candidates[i,j] = 1
-            elif Theta[i,j] == 90:
-                if np.max([G[i-1,j],G[i,j],G[i+1,j]]) == G[i,j]:
-                    edge_candidates[i,j] = 1
-            elif Theta[i,j] == 135:
-                if np.max([G[i-1,j-1],G[i,j],G[i+1,j+1]]) == G[i,j]:
-                    edge_candidates[i,j] = 1
+    # Direzione 0 gradi (orizzontale)
+    mask_0 = (Theta[1:-1, 1:-1] == 0) & (G[1:-1, 1:-1] >= G[1:-1, :-2]) & (G[1:-1, 1:-1] >= G[1:-1, 2:])
+    edge_candidates[1:-1, 1:-1][mask_0] = 1
+
+    # Direzione 45 gradi (diagonale - alto a sinistra a basso a destra)
+    mask_45 = (Theta[1:-1, 1:-1] == 45) & (G[1:-1, 1:-1] >= G[2:, :-2]) & (G[1:-1, 1:-1] >= G[:-2, 2:])
+    edge_candidates[1:-1, 1:-1][mask_45] = 1
+
+    # Direzione 90 gradi (verticale)
+    mask_90 = (Theta[1:-1, 1:-1] == 90) & (G[1:-1, 1:-1] >= G[:-2, 1:-1]) & (G[1:-1, 1:-1] >= G[2:, 1:-1])
+    edge_candidates[1:-1, 1:-1][mask_90] = 1
+
+    # Direzione 135 gradi (diagonale - alto a destra a basso a sinistra)
+    mask_135 = (Theta[1:-1, 1:-1] == 135) & (G[1:-1, 1:-1] >= G[:-2, :-2]) & (G[1:-1, 1:-1] >= G[2:, 2:])
+    edge_candidates[1:-1, 1:-1][mask_135] = 1
 
     return edge_candidates
 
