@@ -1,0 +1,13 @@
+INPUT:
+- Mappa degli edge
+- Fasi calcolate col filtro di Sobel
+- Angoli calcolati con sobel
+
+OUTPUT:
+- Mappa con edge collegati
+
+-----------
+
+Conto numero di edge
+Definisco i vicini di ogni punto
+Collegare i punti in base al gradiente
